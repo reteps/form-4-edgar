@@ -1,21 +1,21 @@
 from django.contrib import admin
 from form4.models import Filing, Transaction, FilingNote, Filer, Company
 from django.urls import resolve
-import nested_admin
+# import nested_admin
 
 # Register your models here.
 
-class FilingNoteInline(nested_admin.NestedTabularInline):
+class FilingNoteInline(admin.TabularInline):
     model = FilingNote
     can_delete = False
     extra = 0
-class TransactionInline(nested_admin.NestedTabularInline):
+class TransactionInline(admin.TabularInline):
     model = Transaction
     can_delete = False
     extra = 0
     fields = ('date', 'amount', 'amount_after', 'price', 'added_stock', 'code')
 
-    inlines = [FilingNoteInline]
+    # inlines = [FilingNoteInline]
 class FilingInline(admin.TabularInline):
     model = Filing.filers.through
     show_change_link = True
@@ -27,7 +27,7 @@ class CompanyFilingInline(admin.TabularInline):
     extra = 0
     can_delete = False
 @admin.register(Filing)
-class FilingAdmin(nested_admin.NestedModelAdmin):
+class FilingAdmin(admin.ModelAdmin):
     # list_filter = ('',)
     inlines = [TransactionInline]
     def get_company_symbol(self, obj):
@@ -42,7 +42,7 @@ class FilingAdmin(nested_admin.NestedModelAdmin):
 class TransactionAdmin(admin.ModelAdmin):
     list_filter = ('code',)
     list_display = ('date', 'amount', 'amount_after', 'price', 'percent_change', 'filers_display')
-    inlines = [FilingNoteInline]
+    # inlines = [FilingNoteInline]
 @admin.register(FilingNote)
 class FilingNoteAdmin(admin.ModelAdmin):
     list_display = ('transaction', 'text')

@@ -1,0 +1,14 @@
+Company Size (million)
+Date Filed (date)
+Date Transaction (date)
+Days after filing (int)
+is_director = models.BooleanField()
+is_officer = models.BooleanField()
+is_ten_percent_owner = models.BooleanField()
+is_other = models.BooleanField()
+percent_change ()
+amount $ ()
+amount / company size (%)
+# Each transaction Code
+industry
+num_unique_insiders_past_two_weeks

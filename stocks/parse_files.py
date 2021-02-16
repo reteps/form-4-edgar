@@ -1,6 +1,5 @@
 import edgar
 import requests
-# edgar.download_index('./out', 2016, skip_all_present_except_last=False)
 from lxml import html
 import pandas
 import ujson as json
@@ -19,12 +18,8 @@ from asgiref.sync import sync_to_async
 import xml
 import django
 from aiohttp import ClientSession, TCPConnector
-# tqdm_spec = None
-# cat *.tsv > master.tsv; awk -F'|' '$3 == 4' master.tsv > form_4.tsv; rm master.tsv
-# exit()
 from timeit import default_timer as timer
 base = 'https://www.sec.gov'
-# print(data)
 limit = 10
 import re
 from itertools import islice
@@ -33,8 +28,8 @@ import binascii
 from collections import OrderedDict
 
 TRANSACTION_CODES = [
-    ('P', 'BOUGHT'),
-    ('P-B', 'BOUGHT - 10b5-1'),
+    ('P', 'PURCHASE'),
+    ('P-B', 'PURCHASE - 10b5-1'),
     ('S', 'SOLD'),
     ('S-B', 'SOLD - 10b5-1'),
     ('S-T', 'SOLD - TAX'),

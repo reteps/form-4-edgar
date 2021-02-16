@@ -27,6 +27,11 @@ class Filing(models.Model):
         return f' {self.filers_display()} - {self.date_filed} - {self.company.symbol}'
     class Meta:
         ordering = ('date_filed',)
+
+# class StockPriceOnDay(models.Model):
+#     company = models.ForeignKey('Company', on_delete=models.CASCADE)
+#     date = models.DateField()
+#     price = models.FloatField()
 class Transaction(models.Model):
     filing = models.ForeignKey('Filing', on_delete=models.CASCADE)
     date = models.DateField()
@@ -35,6 +40,7 @@ class Transaction(models.Model):
     added_stock = models.BooleanField()
     code = models.CharField(max_length=3, choices=TRANSACTION_CODES)
     amount_after = models.FloatField()
+    # price_history = models.ManyToManyField('StockPriceOnDay')
     def filers_display(self):
         return self.filing.filers_display()
     @property
