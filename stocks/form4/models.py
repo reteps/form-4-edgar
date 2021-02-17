@@ -3,7 +3,7 @@ from django.db.models.functions import Lower
 import math
 from django.db.models import F
 from django.db.models.functions import Cast
-from parse_files import TRANSACTION_CODES
+from codes import TRANSACTION_CODES
 # Create your models here.
 ON_FIELDS = [
     ('P', 'price'),

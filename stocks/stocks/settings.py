@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'form4.apps.Form4Config',
     'debug_toolbar',
+    'celery',
+    'celery_progress'
     # 'nested_admin',
 ]
 
@@ -128,3 +130,12 @@ STATIC_URL = '/static/'
 INTERNAL_IPS = [
     '127.0.0.1',
 ]
+
+# CELERY
+
+CELERY_BROKER_URL = 'redis://localhost:6379'
+BROKER_URL = CELERY_BROKER_URL
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'

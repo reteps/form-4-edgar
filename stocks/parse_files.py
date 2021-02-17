@@ -26,20 +26,12 @@ from itertools import islice
 import math
 import binascii
 from collections import OrderedDict
-
-TRANSACTION_CODES = [
-    ('P', 'PURCHASE'),
-    ('P-B', 'PURCHASE - 10b5-1'),
-    ('S', 'SOLD'),
-    ('S-B', 'SOLD - 10b5-1'),
-    ('S-T', 'SOLD - TAX'),
-    ('S-M', 'SOLD - MARGIN CALL'),
-    ('A', 'ACQUIRED'),
-    ('A-B', 'ACQUIRED - 10b5-1'),
-    ('A-P', 'ACQUIRED - PURCHASE PLAN'),
-    ('A-I', 'ACQUIRED - COMPENSATION'),
-    ('A-D', 'ACQUIRED - DIVIDEND')
-]
+from celery import shared_task
+from celery_progress.backend import ProgressRecorder
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "stocks.settings")
+django.setup()
+from form4.models import Company, Filing, Filer, Transaction, FilingNote
+from codes import TRANSACTION_CODES
 
 def test(phrases, s):
     for phrase in phrases:
@@ -301,26 +293,30 @@ def form_4(data):
     # print(results)
     return (results.get('xml', None), date)
 
-if __name__ == '__main__':
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "stocks.settings")
-    django.setup()
-    from form4.models import *
+@shared_task(bind=True)
+def scrape_all_form_4(self, tsv_file):
 
-    data_frame = pandas.read_csv('../out/form_4.tsv', sep='|')
+    progress_recorder = ProgressRecorder(self)
+
+
+    data_frame = pandas.read_csv(tsv_file, sep='|')
 
     s = timer()
     loop = asyncio.get_event_loop()
     # 188
 
-    start_batch = 1709
-    for i, b in enumerate(batch(data_frame['INDEX'], 1000)):
+    start_batch = 0
+    sections = batch(data_frame['INDEX'], 1000)
+    est_len = len(data_frame['INDEX']) // 1000
+    for i, b in enumerate(sections):
         if i+1 < start_batch:
             continue
-        while True:
-            try:
-                results = loop.run_until_complete(wait_for_download_async(b, i))
-                break
-            except ValueError:
-                print("hit rate limit.")
-                exit()
+        try:
+            results = loop.run_until_complete(wait_for_download_async(b, i))
+        except ValueError:
+            raise TypeError("hit rate limit.")
+            exit()
+        progress_recorder.set_progress(i + 1, est_len)
     loop.close()
+if __name__ == '__main__':
+    pass
